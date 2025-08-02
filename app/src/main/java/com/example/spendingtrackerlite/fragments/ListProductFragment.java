@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 public class ListProductFragment extends Fragment {
     public ListProductFragment() {}
     EditText searchEditText;
-    ListView productListView;
+    ListView productsListView;
     ArrayList<String> allProducts;
     ArrayAdapter<String> adapter;
     DatabaseHelper dbHelper;
@@ -35,14 +36,14 @@ public class ListProductFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_list_product, container, false);
         super.onCreate(savedInstanceState);
 
-        productListView = view.findViewById(R.id.listViewProducts);
+        productsListView = view.findViewById(R.id.listViewProducts);
         searchEditText = view.findViewById(R.id.searchEditText);
 
         dbHelper = new DatabaseHelper(getActivity());
         allProducts = dbHelper.getAllProducts();
 
         adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, new ArrayList<>(allProducts));
-        productListView.setAdapter(adapter);
+        productsListView.setAdapter(adapter);
 
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -60,6 +61,28 @@ public class ListProductFragment extends Fragment {
 
             }
         });
+
+        productsListView.setOnItemClickListener((parent, itemView, position, id) -> {
+            String selectedProductString = (String) parent.getItemAtPosition(position);
+
+            String[] parts = selectedProductString.split(" ");
+
+            String productBarcode = parts[0]; // Example: Assuming Barcode is 0th item
+
+            if (productBarcode.isEmpty()) {
+                Toast.makeText(getContext(), "Error: Product barcode not found.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Navigate to ProductTransactionsFragment
+            ProductTransactionsFragment transactionsFragment = ProductTransactionsFragment.newInstance(productBarcode);
+
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main_content, transactionsFragment) // Use your main fragment container ID
+                    .addToBackStack(null) // Allows user to navigate back
+                    .commit();
+        });
+
 
         return view;
     }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.BlurMaskFilter;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,11 +16,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "Products.db";
+    private static final String DATABASE_NAME = "SpendingTracker.db";
     private static final String DATABASE_PATH = "/data/data/com.example.spendingtrackerlite/databases/";
     private static final int DATABASE_VERSION = 1;
 
@@ -29,7 +32,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //Columns
     private static final String COLUMN_ID = "Id", COLUMN_CATEGORY = "Category", COLUMN_TYPE = "Type",
             COLUMN_BRAND = "Brand", COLUMN_TITLE = "Title", COLUMN_UNIT = "Unit",COLUMN_QUANTITY = "Quantity",
-            COLUMN_PERCENT = "Percent", COLUMN_BARCODE = "Barcode", COLUMN_MANUFACTURER = "manufacturer", COLUMN_COUNTRY = "country";
+            COLUMN_PERCENT = "Percentage", COLUMN_BARCODE = "Barcode", COLUMN_MANUFACTURER = "manufacturer", COLUMN_COUNTRY = "country";
     public static final String COL_BARCODE = "Barcode", COL_PRICE = "Price",
             COL_DATE = "Date", COL_TIME = "Time";
     public static final String COL_SCODE = "SCODE", COL_NAME = "Name", COL_LONGITUDE = "Longitude", COL_LATITUDE = "Latitude";
@@ -114,8 +117,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }}
     }
 
-    // Inside your DatabaseHelper.java class
-
     public void insertTransaction(String scode, String barcode, double price, String date, String time) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -165,7 +166,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID));
+                //int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID));
                 String category = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY));
                 String type = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TYPE));
                 String brand = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BRAND));
@@ -176,12 +177,80 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String barcode = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BARCODE));
                 String manufacturer = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MANUFACTURER));
                 String country = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COUNTRY));
-                list.add(id + " " + category + " " + type + " " + brand + " " + title + " " + quantity + " " + unit + " " + percent + " " + barcode + " " + manufacturer+ " " + country);
+
+                DecimalFormat df = new DecimalFormat("#.##");
+                String info = barcode + " " + category + " " + type+ " " +
+                        brand + " " + title + " " +
+                        df.format(quantity) + " " + unit + " " +
+                        df.format(percent)  + " " +
+                        manufacturer + " " + country;
+                list.add(info);
             } while (cursor.moveToNext());
         }
         cursor.close();
         return list;
     }
+
+    public List<String> getTransactionsForProduct(String productBarcode) {
+        List<String> transactionList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        // Ensure the barcode is not null or empty to prevent SQL issues
+        if (productBarcode == null || productBarcode.isEmpty()) {
+            Log.e("DB_GET_TRANSACTIONS", "Product barcode is null or empty.");
+            return transactionList; // Return empty list
+        }
+
+        String query = "SELECT T." + COL_SCODE + ", S." + COL_NAME + " AS StoreName, T." + COL_PRICE + ", T." + COL_DATE + ", T." + COL_TIME +
+                " FROM " + TABLE_TRANSACTIONS + " T" +
+                " LEFT JOIN " + TABLE_STORES + " S ON T." + COL_SCODE + " = S." + COL_SCODE +
+                " WHERE T." + COL_BARCODE + " = ?" +
+                " ORDER BY T." + COL_DATE + " DESC, T." + COL_TIME + " DESC";
+
+        // Use a parameterized query to prevent SQL injection
+        String selection = COL_BARCODE + " = ?";
+        String[] selectionArgs = { productBarcode };
+
+        try {
+            cursor = db.rawQuery(query, selectionArgs); // Pass barcode as selection argument
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    // Adjust how you retrieve and format the transaction details
+                    String scode = cursor.getString(cursor.getColumnIndexOrThrow(COL_SCODE));
+                    // Get the StoreName. It might be null if the LEFT JOIN didn't find a match.
+                    String storeName = cursor.getString(cursor.getColumnIndexOrThrow("StoreName"));
+                    double price = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_PRICE));
+                    String date = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATE));
+                    String time = cursor.getString(cursor.getColumnIndexOrThrow(COL_TIME));
+
+                    String displayStoreName = (storeName != null && !storeName.isEmpty()) ? storeName : scode; // Fallback to SCODE if name is null/empty
+
+                    String priceStr;
+                    if (price == (long) price) {
+                        priceStr = String.format(java.util.Locale.US, "%d", (long) price);
+                    } else {
+                        priceStr = String.format(java.util.Locale.US, "%.2f", price);
+                    }
+
+                    String transactionDetail = "Store: " + displayStoreName +
+                            "\nPrice: " + priceStr +
+                            "\nDate: " + date + " " + time;
+                    transactionList.add(transactionDetail);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("DB_GET_TRANSACTIONS", "Error while trying to get transactions for product", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            // db.close(); // Don't close db here if helper manages it
+        }
+        return transactionList;
+    }
+
 
     public void createDatabase() {
         boolean dbExists = checkDatabase();
