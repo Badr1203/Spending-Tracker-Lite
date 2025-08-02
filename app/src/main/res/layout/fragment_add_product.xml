@@ -1,116 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:padding="10dp"
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:background="@color/cardview_dark_background">
 
-    <EditText
-        android:id="@+id/editTextCategory"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/category"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        android:minHeight="40dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
 
-    <EditText
-        android:id="@+id/editTextType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/type"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        android:minHeight="40dp" />
+            <EditText
+                android:id="@+id/editTextCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/category"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:minHeight="40dp" />
 
-    <EditText
-        android:id="@+id/editTextBrand"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/brand"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        android:minHeight="40dp" />
+            <EditText
+                android:id="@+id/editTextType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/type"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:minHeight="40dp" />
 
-    <EditText
-        android:id="@+id/editTextTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/title"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        android:minHeight="40dp" />
+            <EditText
+                android:id="@+id/editTextBrand"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/brand"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:minHeight="40dp" />
 
-    <EditText
-        android:id="@+id/editTextUnit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/unit"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        android:minHeight="40dp" />
+            <EditText
+                android:id="@+id/editTextTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/title"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:minHeight="40dp" />
 
-    <EditText
-        android:id="@+id/editTextQuantity"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/quantity"
-        android:inputType="numberDecimal"
-        android:importantForAutofill="no"
-        android:minHeight="40dp" />
+            <EditText
+                android:id="@+id/editTextUnit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/unit"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:minHeight="40dp" />
 
-    <EditText
-        android:id="@+id/editTextPercent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/percentage"
-        android:inputType="numberDecimal"
-        android:importantForAutofill="no"
-        android:minHeight="40dp" />
+            <EditText
+                android:id="@+id/editTextQuantity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/quantity"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal"
+                android:minHeight="40dp" />
 
-    <EditText
-        android:id="@+id/editTextBarcode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/barcode"
-        android:importantForAutofill="no"
-        android:inputType="number"
-        android:minHeight="40dp" />
+            <EditText
+                android:id="@+id/editTextPercent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/percentage"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal"
+                android:minHeight="40dp" />
 
-    <EditText
-        android:id="@+id/editTextManufacturer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/manufacturer"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        android:minHeight="40dp" />
+            <EditText
+                android:id="@+id/editTextBarcode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/barcode"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:minHeight="40dp" />
 
-    <EditText
-        android:id="@+id/editTextCountry"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/country"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        android:minHeight="40dp" />
+            <EditText
+                android:id="@+id/editTextManufacturer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/manufacturer"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:minHeight="40dp" />
 
-    <Button
-        android:id="@+id/buttonInsert"
-        android:text="@string/insert_product"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <Button
-        android:id="@+id/buttonViewProducts"
-        android:text="@string/view_products"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/editTextCountry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/country"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:minHeight="40dp" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/buttonInsert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/insert_product" />
 
+        </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>

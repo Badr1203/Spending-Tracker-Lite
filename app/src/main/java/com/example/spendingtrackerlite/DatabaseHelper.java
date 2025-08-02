@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -19,18 +20,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "Products.db";
     private static final String DATABASE_PATH = "/data/data/com.example.spendingtrackerlite/databases/";
     private static final int DATABASE_VERSION = 1;
-    private static final String TABLE_NAME = "Products";
-    private static final String COLUMN_ID = "Id";
-    private static final String COLUMN_CATEGORY = "Category";
-    private static final String COLUMN_TYPE = "Type";
-    private static final String COLUMN_BRAND = "Brand";
-    private static final String COLUMN_TITLE = "Title";
-    private static final String COLUMN_UNIT = "Unit";
-    private static final String COLUMN_QUANTITY = "Quantity";
-    private static final String COLUMN_PERCENT = "Percent";
-    private static final String COLUMN_BARCODE = "Barcode";
-    private static final String COLUMN_MANUFACTURER = "manufacturer";
-    private static final String COLUMN_COUNTRY = "country";
+
+    //Tables
+    private static final String TABLE_PRODUCTS = "Products", TABLE_TRANSACTIONS = "Transactions", TABLE_STORES = "Stores";
+
+    //Columns
+    private static final String COLUMN_ID = "Id", COLUMN_CATEGORY = "Category", COLUMN_TYPE = "Type",
+            COLUMN_BRAND = "Brand", COLUMN_TITLE = "Title", COLUMN_UNIT = "Unit",COLUMN_QUANTITY = "Quantity",
+            COLUMN_PERCENT = "Percent", COLUMN_BARCODE = "Barcode", COLUMN_MANUFACTURER = "manufacturer", COLUMN_COUNTRY = "country";
+    public static final String COL_BARCODE = "Barcode", COL_PRICE = "Price",
+            COL_DATE = "Date", COL_TIME = "Time";
+    public static final String COL_SCODE = "SCODE", COL_NAME = "Name", COL_LONGITUDE = "Longitude", COL_LATITUDE = "Latitude";
 
     private final Context context;
 
@@ -40,9 +40,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onCreate(SQLiteDatabase sqLiteDatabase) {
+    public void onCreate(SQLiteDatabase db) {
+        // Enable foreign key constraint enforcement (recommended for SQLite)
+        db.execSQL("PRAGMA foreign_keys = ON;");
 
+        String createProductsTable = "CREATE TABLE " + TABLE_PRODUCTS + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_CATEGORY + " TEXT, " +
+                COLUMN_TYPE + " TEXT, " +
+                COLUMN_BRAND + " TEXT, " +
+                COLUMN_TITLE + " TEXT, " +
+                COLUMN_UNIT + " TEXT, " +
+                COLUMN_QUANTITY + " REAL, " +
+                COLUMN_PERCENT + " REAL, " +
+                COLUMN_BARCODE + " TEXT UNIQUE NOT NULL, " + // Using COLUMN_BARCODE from Products
+                COLUMN_MANUFACTURER + " TEXT, " +
+                COLUMN_COUNTRY + " TEXT" +
+                ");";
+        db.execSQL(createProductsTable);
+
+        String createStoresTable = "CREATE TABLE " + TABLE_STORES + " (" +
+                COL_SCODE + " TEXT PRIMARY KEY NOT NULL, " + // Using COL_SCODE from Stores
+                COL_NAME + " TEXT, " +
+                COL_LONGITUDE + " REAL, " +
+                COL_LATITUDE + " REAL" +
+                ");";
+        db.execSQL(createStoresTable);
+
+        String createTransactionsTable = "CREATE TABLE " + TABLE_TRANSACTIONS + " (" +
+                COL_SCODE + " TEXT, " +         // Foreign key to Stores
+                COL_BARCODE + " TEXT, " +       // Foreign key to Products (using COL_BARCODE for consistency)
+                COL_PRICE + " REAL, " +
+                COL_DATE + " TEXT, " +
+                COL_TIME + " TEXT, " +
+                "PRIMARY KEY (" + COL_SCODE + ", " + COL_BARCODE + ", " + COL_DATE + ", " + COL_TIME + ")," +
+                "FOREIGN KEY (" + COL_SCODE + ") REFERENCES " + TABLE_STORES + "(" + COL_SCODE + ") ON UPDATE CASCADE ON DELETE CASCADE, " +
+                "FOREIGN KEY (" + COL_BARCODE + ") REFERENCES " + TABLE_PRODUCTS + "(" + COLUMN_BARCODE + ") ON UPDATE CASCADE ON DELETE CASCADE" + // Ensure this refers to Products.Barcode
+                ");";
+        db.execSQL(createTransactionsTable);
     }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
@@ -68,7 +105,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 brand.isEmpty() ||unit.isEmpty() ||
                 quantity.isNaN()) Toast.makeText(context, "Failed to Insert", Toast.LENGTH_SHORT).show();
         else {
-            long result = db.insert(TABLE_NAME, null, cv);
+            long result = db.insert(TABLE_PRODUCTS, null, cv);
             if (result == -1) {
                 Toast.makeText(context, "Failed to Insert", Toast.LENGTH_SHORT).show();
             } else {
@@ -79,7 +116,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<String> getAllProducts() {
         ArrayList<String> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_PRODUCTS, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -129,7 +166,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             output.close();
             input.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("CopyDatabase", "Failed to copy DB", e);
         }
     }
 }

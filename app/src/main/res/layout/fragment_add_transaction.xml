@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".fragments.AddTransactionFragment">
+
+    <EditText
+        android:id="@+id/editTextStoreCode"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/store_code"
+        android:inputType="textCapCharacters"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/editTextBarcode"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/editTextBarcode"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/barcode"
+        android:inputType="text"
+        app:layout_constraintTop_toBottomOf="@id/editTextStoreCode"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/editTextPrice"
+        android:layout_marginBottom="8dp"/>
+    <!-- You could add a button here for barcode scanning -->
+
+    <EditText
+        android:id="@+id/editTextPrice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/price"
+        android:inputType="numberDecimal"
+        app:layout_constraintTop_toBottomOf="@id/editTextBarcode"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/et_date"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/et_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Date (YYYY-MM-DD)"
+        android:inputType="date"
+        android:focusable="false"
+        app:layout_constraintTop_toBottomOf="@id/editTextPrice"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_pick_date"
+        app:layout_constraintBottom_toTopOf="@+id/et_time"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/button_pick_date"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="Pick"
+        app:icon="@drawable/ic_calendar"
+        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+        app:layout_constraintTop_toTopOf="@id/et_date"
+        app:layout_constraintBottom_toBottomOf="@id/et_date"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/et_date"/>
+
+    <EditText
+        android:id="@+id/et_time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Time (HH:MM)"
+        android:inputType="time"
+        android:focusable="false"
+        app:layout_constraintTop_toBottomOf="@id/et_date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_pick_time"
+        app:layout_constraintBottom_toTopOf="@+id/button_add_transaction"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/button_pick_time"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="Pick"
+        app:icon="@drawable/ic_time"
+        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+        app:layout_constraintTop_toTopOf="@id/et_time"
+        app:layout_constraintBottom_toBottomOf="@id/et_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/et_time"/>
+
+    <Button
+        android:id="@+id/button_add_transaction"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Add Transaction"
+        app:layout_constraintTop_toBottomOf="@id/et_time"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.0"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
