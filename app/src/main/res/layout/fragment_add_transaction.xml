@@ -41,11 +41,11 @@
         app:layout_constraintTop_toBottomOf="@id/editTextBarcode"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/et_date"
+        app:layout_constraintBottom_toTopOf="@+id/editTextDate"
         android:layout_marginBottom="8dp"/>
 
     <EditText
-        android:id="@+id/et_date"
+        android:id="@+id/editTextDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Date (YYYY-MM-DD)"
@@ -54,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@id/editTextPrice"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button_pick_date"
-        app:layout_constraintBottom_toTopOf="@+id/et_time"
+        app:layout_constraintBottom_toTopOf="@+id/editTextTime"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"/>
 
@@ -65,19 +65,19 @@
         android:text="Pick"
         app:icon="@drawable/ic_calendar"
         style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-        app:layout_constraintTop_toTopOf="@id/et_date"
-        app:layout_constraintBottom_toBottomOf="@id/et_date"
+        app:layout_constraintTop_toTopOf="@id/editTextDate"
+        app:layout_constraintBottom_toBottomOf="@id/editTextDate"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/et_date"/>
+        app:layout_constraintStart_toEndOf="@id/editTextDate"/>
 
     <EditText
-        android:id="@+id/et_time"
+        android:id="@+id/editTextTime"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Time (HH:MM)"
         android:inputType="time"
         android:focusable="false"
-        app:layout_constraintTop_toBottomOf="@id/et_date"
+        app:layout_constraintTop_toBottomOf="@id/editTextDate"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button_pick_time"
         app:layout_constraintBottom_toTopOf="@+id/button_add_transaction"
@@ -91,17 +91,17 @@
         android:text="Pick"
         app:icon="@drawable/ic_time"
         style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-        app:layout_constraintTop_toTopOf="@id/et_time"
-        app:layout_constraintBottom_toBottomOf="@id/et_time"
+        app:layout_constraintTop_toTopOf="@id/editTextTime"
+        app:layout_constraintBottom_toBottomOf="@id/editTextTime"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/et_time"/>
+        app:layout_constraintStart_toEndOf="@id/editTextTime"/>
 
     <Button
         android:id="@+id/button_add_transaction"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Add Transaction"
-        app:layout_constraintTop_toBottomOf="@id/et_time"
+        app:layout_constraintTop_toBottomOf="@id/editTextTime"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -10,11 +10,15 @@ import android.widget.EditText; // Import EditText (or TextInputEditText)
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.example.spendingtrackerlite.DatabaseHelper;
 import com.example.spendingtrackerlite.R;
 
 // For Date/Time Pickers
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.widget.Toast;
+
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -40,8 +44,8 @@ public class AddTransactionFragment extends Fragment {
         editTextStoreCode = view.findViewById(R.id.editTextStoreCode);
         editTextBarcode = view.findViewById(R.id.editTextBarcode);
         editTextPrice = view.findViewById(R.id.editTextPrice);
-        editTextDate = view.findViewById(R.id.et_date);
-        editTextTime = view.findViewById(R.id.et_time);
+        editTextDate = view.findViewById(R.id.editTextDate);
+        editTextTime = view.findViewById(R.id.editTextTime);
         buttonPickDate = view.findViewById(R.id.button_pick_date);
         buttonPickTime = view.findViewById(R.id.button_pick_time);
         buttonAddTransaction = view.findViewById(R.id.button_add_transaction);
@@ -77,24 +81,65 @@ public class AddTransactionFragment extends Fragment {
                 myCalendar.get(Calendar.HOUR_OF_DAY), myCalendar.get(Calendar.MINUTE), true).show());
 
         // Set up listener for the Add Transaction button
+// Inside AddTransactionFragment.java, in the onClickListener for buttonAddTransaction
+
         buttonAddTransaction.setOnClickListener(v -> {
-            // Implement your logic to get data from EditTexts
-            // and save the transaction to the database
             String scode = editTextStoreCode.getText().toString().trim();
             String barcode = editTextBarcode.getText().toString().trim();
             String priceStr = editTextPrice.getText().toString().trim();
-            String date = editTextDate.getText().toString().trim(); // Already formatted
-            String time = editTextTime.getText().toString().trim(); // Already formatted
+            String date = editTextDate.getText().toString().trim(); // Assuming this is already formatted
+            String time = editTextTime.getText().toString().trim(); // Assuming this is already formatted
 
-            // Add validation here (e.g., check for empty fields, valid price)
+            // --- More Robust Validation ---
+            if (scode.isEmpty()) {
+                editTextStoreCode.setError("Store Code cannot be empty");
+                editTextStoreCode.requestFocus();
+                return;
+            }
+            if (barcode.isEmpty()) {
+                editTextBarcode.setError("Barcode cannot be empty");
+                editTextBarcode.requestFocus();
+                return;
+            }
+            if (priceStr.isEmpty()) {
+                editTextPrice.setError("Price cannot be empty");
+                editTextPrice.requestFocus();
+                return;
+            }
+            if (date.isEmpty()) {
+                // This usually won't happen if you're using the DatePicker to set the text
+                Toast.makeText(getContext(), "Please pick a date", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (time.isEmpty()) {
+                // This usually won't happen if you're using the TimePicker to set the text
+                Toast.makeText(getContext(), "Please pick a time", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            // Example:
-            // if (scode.isEmpty() || barcode.isEmpty() || priceStr.isEmpty() || date.isEmpty() || time.isEmpty()) {
-            //     Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
-            //     return;
-            // }
-            // double price = Double.parseDouble(priceStr);
-            // Call your DatabaseHelper method to add the transaction
+            double price;
+            try {
+                price = Double.parseDouble(priceStr);
+                if (price < 0) {
+                    editTextPrice.setError("Price cannot be negative");
+                    editTextPrice.requestFocus();
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                editTextPrice.setError("Invalid price format");
+                editTextPrice.requestFocus();
+                return;
+            }
+
+            // --- End of Validation ---
+
+            DatabaseHelper dbHelper = new DatabaseHelper(getContext());
+            dbHelper.insertTransaction(scode, barcode, price, date, time);
+
+            // Optionally, clear fields or navigate away after successful insertion
+            // editTextStoreCode.setText("");
+            // editTextBarcode.setText("");
+            // ... etc.
         });
 
         return view;

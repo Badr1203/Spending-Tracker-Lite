@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -40,7 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(@NonNull SQLiteDatabase db) {
         // Enable foreign key constraint enforcement (recommended for SQLite)
         db.execSQL("PRAGMA foreign_keys = ON;");
 
@@ -80,7 +82,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createTransactionsTable);
     }
 
-
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
@@ -111,6 +112,50 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } else {
                 Toast.makeText(context, "Product Inserted", Toast.LENGTH_SHORT).show();
             }}
+    }
+
+    // Inside your DatabaseHelper.java class
+
+    public void insertTransaction(String scode, String barcode, double price, String date, String time) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(COL_SCODE, scode);
+        cv.put(COL_BARCODE, barcode); // Using COL_BARCODE as defined for Transactions table
+        cv.put(COL_PRICE, price);
+        cv.put(COL_DATE, date);
+        cv.put(COL_TIME, time);
+
+        // Basic validation (you might want to add more specific validation)
+        if (scode == null || scode.isEmpty() ||
+                barcode == null || barcode.isEmpty() ||
+                date == null || date.isEmpty() ||
+                time == null || time.isEmpty() ||
+                Double.isNaN(price) || price < 0) { // Check for valid price
+            Toast.makeText(context, "Failed to Insert Transaction: Invalid data", Toast.LENGTH_SHORT).show();
+            Log.e("DB_INSERT_TRANSACTION", "Invalid data provided: SCODE=" + scode +
+                    ", Barcode=" + barcode + ", Price=" + price + ", Date=" + date + ", Time=" + time);
+            return; // Exit if data is invalid
+        }
+
+        long result = -1;
+        try {
+            db.beginTransaction(); // Start a transaction for atomicity [1]
+            result = db.insert(TABLE_TRANSACTIONS, null, cv);
+            if (result != -1) {
+                db.setTransactionSuccessful(); // Mark transaction as successful [1]
+            }
+        } catch (Exception e) {
+            Log.e("DB_INSERT_TRANSACTION", "Error inserting transaction", e);
+        } finally {
+            db.endTransaction(); // End the transaction (commits if successful, rolls back otherwise) [1]
+        }
+
+        if (result == -1) {
+            Toast.makeText(context, "Failed to Insert Transaction", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Transaction Inserted Successfully", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public ArrayList<String> getAllProducts() {
