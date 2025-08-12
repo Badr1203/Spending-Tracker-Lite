@@ -47,7 +47,7 @@ CREATE TABLE Stores (
 );
 ```
 
-### 3. `Transaactions`
+### 3. `Transactions`
 Receipts of purchases made in Stores.
 
 ```sql
