@@ -5,11 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.BlurMaskFilter;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -122,7 +122,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
 
         cv.put(COL_SCODE, scode);
-        cv.put(COL_BARCODE, barcode); // Using COL_BARCODE as defined for Transactions table
+        cv.put(COL_BARCODE, barcode);
         cv.put(COL_PRICE, price);
         cv.put(COL_DATE, date);
         cv.put(COL_TIME, time);
@@ -136,7 +136,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Toast.makeText(context, "Failed to Insert Transaction: Invalid data", Toast.LENGTH_SHORT).show();
             Log.e("DB_INSERT_TRANSACTION", "Invalid data provided: SCODE=" + scode +
                     ", Barcode=" + barcode + ", Price=" + price + ", Date=" + date + ", Time=" + time);
+            db.close();
             return; // Exit if data is invalid
+        }
+
+        if (!storeScodeExists(scode)) {
+            Toast.makeText(context, "Failed to Insert Transaction: Store with SCODE '" + scode + "' does not exist.", Toast.LENGTH_LONG).show();
+            Log.e("DB_INSERT_TRANSACTION", "SCODE '" + scode + "' not found in " + TABLE_STORES);
+            return;
         }
 
         long result = -1;
@@ -157,7 +164,62 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } else {
             Toast.makeText(context, "Transaction Inserted Successfully", Toast.LENGTH_SHORT).show();
         }
+
+        db.close();
     }
+
+    public void insertStore(String scode, String name, Double longitude, Double latitude) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(COL_SCODE, scode);
+        cv.put(COL_NAME, name);
+        cv.put(COL_LONGITUDE, longitude);
+        cv.put(COL_LATITUDE, latitude);
+
+        // Validation
+        if (scode == null || scode.isEmpty() ||
+            longitude.isNaN() || latitude.isNaN()) {
+            Toast.makeText(context, "Failed to Insert Store: Invalid data", Toast.LENGTH_SHORT).show();
+            Log.e("DB_INSERT_TRANSACTION", "Invalid data provided: SCODE=" + scode +
+                    ", SCODE=" + scode + ", Name=" + name + ", Longitude=" + longitude + ", Latitude=" + latitude);
+            db.close();
+            return; // Exit if data is invalid
+        }
+
+        long result = -1;
+        try {
+            db.beginTransaction();
+            result = db.insert(TABLE_STORES, null, cv);
+            if (result != -1) {
+                db.setTransactionSuccessful();
+            }
+        } catch (Exception e) {
+            android.util.Log.e("DB_INSERT_STORE", "Error inserting store", e);
+        } finally {
+            db.endTransaction();
+        }
+
+        if (result == -1) {
+            Toast.makeText(context, "Failed to Insert Store. SCODE might already exist or data is invalid.", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(context, "Store Inserted Successfully", Toast.LENGTH_SHORT).show();
+        }
+        // db.close(); // Don't close if helper manages it
+    }
+
+    public boolean storeScodeExists(String scode) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT " + COL_SCODE + " FROM " + TABLE_STORES + " WHERE " + COL_SCODE + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{scode});
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        return exists;
+    }
+
+
+
+
 
     public ArrayList<String> getAllProducts() {
         ArrayList<String> list = new ArrayList<>();
@@ -188,6 +250,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         cursor.close();
+        db.close();
         return list;
     }
 
@@ -246,10 +309,65 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (cursor != null) {
                 cursor.close();
             }
-            // db.close(); // Don't close db here if helper manages it
+            db.close(); // Don't close db here if helper manages it
         }
         return transactionList;
     }
+
+    // Inside DatabaseHelper.java
+
+// ... (other methods)
+
+    public List<String> getAllStores() {
+        List<String> stores = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        String query = "SELECT " + COL_SCODE + ", " + COL_NAME + ", " + COL_LONGITUDE + ", " + COL_LATITUDE +
+                " FROM " + TABLE_STORES +
+                " ORDER BY " + COL_NAME + " ASC"; // Order by name, for example
+
+        try {
+            cursor = db.rawQuery(query, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    String scode = cursor.getString(cursor.getColumnIndexOrThrow(COL_SCODE));
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME));
+                    // GetDouble might return 0.0 if the column is NULL and not handled.
+                    // Check for null before getting double if you want to display "N/A" or similar for NULL coordinates
+                    double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LONGITUDE));
+                    double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_LATITUDE));
+
+                    // Format the string for display. You can customize this.
+                    StringBuilder storeDetails = new StringBuilder();
+                    storeDetails.append("Name: ").append(name).append(" (").append(scode).append(")");
+
+                    // Check if longitude and latitude columns are actually null before trying to use getDouble
+                    // To do this robustly, you might need to check cursor.isNull(columnIndex)
+                    int longitudeColIndex = cursor.getColumnIndex(COL_LONGITUDE);
+                    int latitudeColIndex = cursor.getColumnIndex(COL_LATITUDE);
+
+                    if (!cursor.isNull(longitudeColIndex) && !cursor.isNull(latitudeColIndex)) {
+                        storeDetails.append("\nLocation: ").append(String.format(java.util.Locale.US, "%.4f, %.4f", latitude, longitude));
+                    } else {
+                        storeDetails.append("\nLocation: Not Available");
+                    }
+
+                    stores.add(storeDetails.toString());
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            android.util.Log.e("DB_GET_STORES", "Error while trying to get all stores", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            // db.close(); // Don't close if helper manages it
+        }
+        return stores;
+    }
+
 
 
     public void createDatabase() {

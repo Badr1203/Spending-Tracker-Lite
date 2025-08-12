@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.StoreFragment"> <!-- Update with your actual fragment path -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/tv_store_list_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Available Stores"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:padding="8dp"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="8dp"/>
+
+        <ListView
+            android:id="@+id/list_view_stores"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/tv_no_stores"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No stores found. Add one using the '+' button."
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:gravity="center"
+            android:visibility="gone"
+            android:padding="16dp"/>
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_store"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="Add New Store"
+        app:srcCompat="@drawable/ic_add" /> <!-- You'll need an 'ic_add' drawable -->
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
