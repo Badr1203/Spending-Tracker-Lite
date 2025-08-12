@@ -50,7 +50,7 @@ CREATE TABLE Stores (
 ### 3. `Transaactions`
 Receipts of purchases made in Stores.
 
-```
+```sql
 CREATE TABLE Transactions (
     SCODE CHAR(10) NOT NULL,
     Barcode CHAR(20) NOT NULL,
