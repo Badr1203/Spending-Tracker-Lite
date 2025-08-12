@@ -33,3 +33,34 @@ CREATE TABLE Products (
     Country TEXT NULL,                       -- Optional country of origin
     UNIQUE(Barcode, Variant)                -- Prevents duplicate barcode+variant combos
 );
+```
+
+### 2. `Stores`
+Stores information about stores that are used to buy products.
+
+```sql
+CREATE TABLE Stores (
+    SCODE TEXT PRIMARY KEY,
+    Name TEXT NULL,
+    Longitude REAL NOT NULL,
+    Latitude REAL NOT NULL
+);
+```
+
+### 3. `Transaactions`
+Receipts of purchases made in Stores.
+
+```
+CREATE TABLE Transactions (
+    SCODE CHAR(10) NOT NULL,
+    Barcode CHAR(20) NOT NULL,
+    Price DECIMAL(10, 2) NOT NULL,
+    discounted_price DECIMAL(10, 2) DEFAULT NULL,
+    Date DATE NOT NULL,
+    Time TIME NOT NULL,
+    Link TEXT DEFAULT NULL,
+    PRIMARY KEY (SCODE, Barcode, Date, Time),
+    FOREIGN KEY (SCODE) REFERENCES Stores(SCODE),
+    FOREIGN KEY (Barcode) REFERENCES Products(Barcode)
+);
+```
