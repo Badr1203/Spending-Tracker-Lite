@@ -12,9 +12,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider; // For ViewModel communication (recommended)
 
-import com.example.spendingtrackerlite.R; // Replace with your package name
+import com.example.spendingtrackerlite.R;
 import com.example.spendingtrackerlite.DatabaseHelper; // Replace
 
 import java.util.ArrayList;

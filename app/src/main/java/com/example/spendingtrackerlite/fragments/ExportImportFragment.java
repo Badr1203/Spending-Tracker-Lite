@@ -115,7 +115,7 @@ public class ExportImportFragment extends Fragment implements ExportImportListen
     }
 
     private void exportDatabaseToUri(Context context, Uri uri) {
-        String dbName = "Products.db";
+        String dbName = "SpendingTracker.db";
         File dbFile = context.getDatabasePath(dbName);
 
         try (InputStream input = new FileInputStream(dbFile);
@@ -136,7 +136,7 @@ public class ExportImportFragment extends Fragment implements ExportImportListen
     }
 
     private void importDatabaseFromUri(Context context, Uri uri) {
-        String dbName = "Products.db";
+        String dbName = "SpendingTracker.db";
         File dbFile = context.getDatabasePath(dbName);
 
         try (InputStream input = context.getContentResolver().openInputStream(uri);

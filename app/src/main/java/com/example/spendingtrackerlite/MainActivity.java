@@ -19,6 +19,7 @@ import com.example.spendingtrackerlite.fragments.AddTransactionFragment;
 import com.example.spendingtrackerlite.fragments.ExportImportFragment;
 import com.example.spendingtrackerlite.fragments.HomeFragment;
 import com.example.spendingtrackerlite.fragments.ListProductFragment;
+import com.example.spendingtrackerlite.fragments.StoreFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 else if (menuItem.getItemId() == R.id.nav_add_transaction) selectedFragment = new AddTransactionFragment();
                 else if (menuItem.getItemId() == R.id.nav_list_product) selectedFragment = new ListProductFragment();
                 else if (menuItem.getItemId() == R.id.nav_export_import) selectedFragment = new ExportImportFragment();
+                else if (menuItem.getItemId() == R.id.nav_store) selectedFragment = new StoreFragment();
                 else selectedFragment = null;
                 return selectedFragment;
             }
