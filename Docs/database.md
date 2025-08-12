@@ -21,7 +21,7 @@ Stores information about products available in the store.
 ```sql
 CREATE TABLE Products (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,   -- Unique product ID (auto-generated)
-    Barcode TEXT NOT NULL,                  -- Product barcode
+    Barcode CHAR(13) NOT NULL,                  -- Product barcode
     Variant INTEGER NOT NULL DEFAULT 1,     -- Variant number, defaults to 1 if not given
     Type TEXT NOT NULL,                     -- Product type (e.g., "Food", "Electronics")
     Brand TEXT NOT NULL,                    -- Brand name
@@ -52,10 +52,10 @@ Receipts of purchases made in Stores.
 
 ```sql
 CREATE TABLE Transactions (
-    SCODE CHAR(10) NOT NULL,
-    Barcode CHAR(20) NOT NULL,
+    SCODE Text NOT NULL,
+    Barcode CHAR(13) NOT NULL,
     Price DECIMAL(10, 2) NOT NULL,
-    discounted_price DECIMAL(10, 2) DEFAULT NULL,
+    Discounted_price DECIMAL(10, 2) DEFAULT NULL,
     Date DATE NOT NULL,
     Time TIME NOT NULL,
     Link TEXT DEFAULT NULL,
