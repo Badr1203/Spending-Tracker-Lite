@@ -1,110 +1,239 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".fragments.AddTransactionFragment">
+    android:fillViewport="true">
 
-    <EditText
-        android:id="@+id/editTextStoreCode"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/store_code"
-        android:inputType="textCapCharacters"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/editTextBarcode"
-        android:layout_marginBottom="8dp"/>
+        android:padding="16dp"
+        tools:context=".fragments.AddTransactionFragment">
 
-    <EditText
-        android:id="@+id/editTextBarcode"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/barcode"
-        android:inputType="text"
-        app:layout_constraintTop_toBottomOf="@id/editTextStoreCode"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/editTextPrice"
-        android:layout_marginBottom="8dp"/>
-    <!-- You could add a button here for barcode scanning -->
+        <TextView
+            android:id="@+id/tv_add_transaction_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Add New Transaction"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            android:gravity="center_horizontal"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="24dp"/>
 
-    <EditText
-        android:id="@+id/editTextPrice"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/price"
-        android:inputType="numberDecimal"
-        app:layout_constraintTop_toBottomOf="@id/editTextBarcode"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/editTextDate"
-        android:layout_marginBottom="8dp"/>
+        <!-- Store Code -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_transaction_store_code"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Store Code"
+            app:errorEnabled="true"
+            app:layout_constraintTop_toBottomOf="@id/tv_add_transaction_header"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-    <EditText
-        android:id="@+id/editTextDate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Date (YYYY-MM-DD)"
-        android:inputType="date"
-        android:focusable="false"
-        app:layout_constraintTop_toBottomOf="@id/editTextPrice"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button_pick_date"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTime"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"/>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_transaction_store_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapCharacters"
+                android:maxLines="1"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/button_pick_date"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:text="Pick"
-        app:icon="@drawable/ic_calendar"
-        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-        app:layout_constraintTop_toTopOf="@id/editTextDate"
-        app:layout_constraintBottom_toBottomOf="@id/editTextDate"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/editTextDate"/>
+        <!-- Barcode -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_transaction_barcode"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Product Barcode"
+            app:errorEnabled="true"
+            app:layout_constraintTop_toBottomOf="@id/til_transaction_store_code"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-    <EditText
-        android:id="@+id/editTextTime"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Time (HH:MM)"
-        android:inputType="time"
-        android:focusable="false"
-        app:layout_constraintTop_toBottomOf="@id/editTextDate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button_pick_time"
-        app:layout_constraintBottom_toTopOf="@+id/button_add_transaction"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="24dp"/>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_transaction_barcode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLength="13"
+                android:maxLines="1"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/button_pick_time"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:text="Pick"
-        app:icon="@drawable/ic_time"
-        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-        app:layout_constraintTop_toTopOf="@id/editTextTime"
-        app:layout_constraintBottom_toBottomOf="@id/editTextTime"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/editTextTime"/>
+        <!-- Variant -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_transaction_variant"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Product Variant (default: 1)"
+            app:errorEnabled="true"
+            app:helperText="Defaults to 1 if left empty"
+            app:layout_constraintTop_toBottomOf="@id/til_transaction_barcode"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-    <Button
-        android:id="@+id/button_add_transaction"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Add Transaction"
-        app:layout_constraintTop_toBottomOf="@id/editTextTime"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.0"/>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_transaction_variant"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLines="1"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Price -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_transaction_price"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Price"
+            app:errorEnabled="true"
+            app:layout_constraintTop_toBottomOf="@id/til_transaction_variant"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_transaction_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:maxLines="1"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Discounted Price (Optional) -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_transaction_discounted_price"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Discounted Price (Optional)"
+            app:errorEnabled="true"
+            app:layout_constraintTop_toBottomOf="@id/til_transaction_price"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_transaction_discounted_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:maxLines="1"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Date -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_transaction_date"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:hint="Date (YYYY-MM-DD)"
+            app:errorEnabled="true"
+            app:layout_constraintTop_toBottomOf="@id/til_transaction_discounted_price"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button_pick_date">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_transaction_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:focusable="false"
+                android:maxLines="1"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/button_pick_date"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:text="Pick"
+            app:icon="@drawable/ic_calendar"
+            app:layout_constraintTop_toTopOf="@id/til_transaction_date"
+            app:layout_constraintBottom_toBottomOf="@id/til_transaction_date"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/til_transaction_date" />
+
+        <!-- Time -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_transaction_time"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:hint="Time (HH:MM)"
+            app:errorEnabled="true"
+            app:layout_constraintTop_toBottomOf="@id/til_transaction_date"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button_pick_time">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_transaction_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="time"
+                android:focusable="false"
+                android:maxLines="1"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/button_pick_time"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:text="Pick"
+            app:icon="@drawable/ic_time"
+            app:layout_constraintTop_toTopOf="@id/til_transaction_time"
+            app:layout_constraintBottom_toBottomOf="@id/til_transaction_time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/til_transaction_time" />
+
+        <!-- Link (Optional) -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_transaction_link"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Link (Optional, e.g., to receipt)"
+            app:errorEnabled="true"
+            app:layout_constraintTop_toBottomOf="@id/til_transaction_time"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_transaction_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textUri"
+                android:maxLines="1"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/button_add_transaction"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/add_transaction"
+            app:layout_constraintTop_toBottomOf="@id/til_transaction_link"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.0" /> <!-- Use bias 0.0 if more content might make it scroll-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
