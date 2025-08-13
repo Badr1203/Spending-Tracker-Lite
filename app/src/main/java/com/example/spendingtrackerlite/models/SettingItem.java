@@ -1,4 +1,4 @@
-package com.example.spendingtrackerlite.model;
+package com.example.spendingtrackerlite.models;
 
 public class SettingItem {
     public static final int TYPE_ITEM = 0;

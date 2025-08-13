@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.spendingtrackerlite.R;
-import com.example.spendingtrackerlite.model.SettingItem;
+import com.example.spendingtrackerlite.models.SettingItem;
 import com.example.spendingtrackerlite.ExportImportListener;
 
 import java.util.List;

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="?android:attr/selectableItemBackground">
+
+    <TextView
+        android:id="@+id/tv_product_title_brand"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:text="Product Title (Brand)" />
+
+    <TextView
+        android:id="@+id/tv_product_barcode_variant"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceListItemSecondary"
+        android:textSize="14sp"
+        tools:text="Barcode: 1234567890123, Variant: 1" />
+
+    <TextView
+        android:id="@+id/tv_product_category"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textSize="14sp"
+        tools:text="Category: Drink" />
+
+    <TextView
+        android:id="@+id/tv_product_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textSize="14sp"
+        tools:text="Type: Food" />
+
+    <TextView
+        android:id="@+id/tv_product_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textSize="14sp"
+        tools:text="Quantity: 100.0 g, Percentage: 5.5%" />
+
+    <TextView
+        android:id="@+id/tv_product_origin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textAppearance="?attr/textAppearanceCaption"
+        android:textSize="12sp"
+        tools:text="Made by Manufacturer Inc. in CountryLand"
+        android:visibility="gone" /> <!-- Initially gone, show if data exists -->
+
+</LinearLayout>

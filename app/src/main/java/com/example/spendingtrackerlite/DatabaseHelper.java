@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.spendingtrackerlite.models.Product;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -218,39 +220,58 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return exists;
     }
 
-    public ArrayList<String> getAllProducts() {
-        ArrayList<String> list = new ArrayList<>();
+    // Example in DatabaseHelper.java
+    public List<Product> getAllProducts() {
+        List<Product> productList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_PRODUCTS, null);
+        // Be sure to select all necessary columns, including the ID (COL_P_ID)
+        String query = "SELECT * FROM " + TABLE_PRODUCTS + " ORDER BY " + COL_P_TITLE + " ASC";
+        Cursor cursor = null;
 
-        if (cursor.moveToFirst()) {
-            do {
-                //int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID));
-                String barcode = cursor.getString(cursor.getColumnIndexOrThrow(COL_P_BARCODE));
-                int variant = cursor.getInt(cursor.getColumnIndexOrThrow(COL_P_VARIANT));
-                String category = cursor.getString(cursor.getColumnIndexOrThrow(COL_P_CATEGORY));
-                String type = cursor.getString(cursor.getColumnIndexOrThrow(COL_P_TYPE));
-                String brand = cursor.getString(cursor.getColumnIndexOrThrow(COL_P_BRAND));
-                String title = cursor.getString(cursor.getColumnIndexOrThrow(COL_P_TITLE));
-                String unit = cursor.getString(cursor.getColumnIndexOrThrow(COL_P_UNIT));
-                double quantity = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_P_QUANTITY));
-                double percent = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_P_PERCENTAGE));
-                String manufacturer = cursor.getString(cursor.getColumnIndexOrThrow(COL_P_MANUFACTURER));
-                String country = cursor.getString(cursor.getColumnIndexOrThrow(COL_P_COUNTRY));
+        try {
+            cursor = db.rawQuery(query, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int idColIdx = cursor.getColumnIndexOrThrow(COL_P_ID);
+                int barcodeColIdx = cursor.getColumnIndexOrThrow(COL_P_BARCODE);
+                int variantColIdx = cursor.getColumnIndexOrThrow(COL_P_VARIANT);
+                int categoryColIdx = cursor.getColumnIndexOrThrow(COL_P_CATEGORY);
+                int typeColIdx = cursor.getColumnIndexOrThrow(COL_P_TYPE);
+                int brandColIdx = cursor.getColumnIndexOrThrow(COL_P_BRAND);
+                int titleColIdx = cursor.getColumnIndexOrThrow(COL_P_TITLE);
+                int unitColIdx = cursor.getColumnIndexOrThrow(COL_P_UNIT);
+                int quantityColIdx = cursor.getColumnIndexOrThrow(COL_P_QUANTITY);
+                int percentageColIdx = cursor.getColumnIndexOrThrow(COL_P_PERCENTAGE);
+                int manufacturerColIdx = cursor.getColumnIndexOrThrow(COL_P_MANUFACTURER);
+                int countryColIdx = cursor.getColumnIndexOrThrow(COL_P_COUNTRY);
 
-                DecimalFormat df = new DecimalFormat("#.##");
-                String info = barcode + " " + category + " " + type+ " " +
-                        brand;
-                if (!title.isEmpty()) info += " " + title;
-                info += " " + df.format(quantity) + unit;
-                if (percent > 0) info += " " + df.format(percent) + " " +
-                        manufacturer + " " + country;
-                list.add(info);
-            } while (cursor.moveToNext());
+                do {
+                    long id = cursor.getLong(idColIdx);
+                    String barcode = cursor.getString(barcodeColIdx);
+                    int variant = cursor.getInt(variantColIdx);
+                    String category = cursor.getString(categoryColIdx);
+                    String type = cursor.getString(typeColIdx);
+                    String brand = cursor.getString(brandColIdx);
+                    String title = cursor.getString(titleColIdx);
+                    String unit = cursor.getString(unitColIdx);
+                    double quantity = cursor.getDouble(quantityColIdx);
+                    Double percentage = cursor.isNull(percentageColIdx) ? null : cursor.getDouble(percentageColIdx);
+                    String manufacturer = cursor.isNull(manufacturerColIdx) ? null : cursor.getString(manufacturerColIdx);
+                    String country = cursor.isNull(countryColIdx) ? null : cursor.getString(countryColIdx);
+
+                    productList.add(new Product(id, barcode, variant, category, type, brand, title, unit,
+                            quantity, percentage, manufacturer, country));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("DB_GET_ALL_PRODUCTS", "Error getting all products", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        cursor.close();
-        return list;
+        return productList;
     }
+
 
     public List<String> getTransactionsForProduct(String productBarcode) {
         List<String> transactionList = new ArrayList<>();
