@@ -15,47 +15,15 @@ Spending Tracker Lite is a simple Android application designed to help users tra
 *   **Local Data Storage:**
     *   All data is stored locally on the device using an SQLite database.
 
-## Database Schema
-
-The application uses an SQLite database with the following main tables:
-
-1.  **`Products` Table:**
-    *   `Id` (INTEGER, Primary Key, Autoincrement)
-    *   `Category` (TEXT)
-    *   `Type` (TEXT)
-    *   `Brand` (TEXT)
-    *   `Title` (TEXT)
-    *   `Unit` (TEXT)
-    *   `Quantity` (REAL)
-    *   `Percentage` (REAL)
-    *   `Barcode` (TEXT, Unique, Not Null) - Links to Transactions
-    *   `Manufacturer` (TEXT)
-    *   `Country` (TEXT)
-
-2.  **`Stores` Table:**
-    *   `SCODE` (TEXT, Primary Key, Not Null) - Store Code, links to Transactions
-    *   `Name` (TEXT) - Store's actual name
-    *   `Longitude` (REAL)
-    *   `Latitude` (REAL)
-
-3.  **`Transactions` Table:**
-    *   `SCODE` (TEXT) - Foreign Key to `Stores.SCODE`
-    *   `Barcode` (TEXT) - Foreign Key to `Products.Barcode`
-    *   `Price` (REAL)
-    *   `Date` (TEXT) - Format: YYYY-MM-DD
-    *   `Time` (TEXT) - Format: HH:MM
-    *   Primary Key: (`SCODE`, `Barcode`, `Date`, `Time`)
-    *   Foreign Key Constraints: `ON UPDATE CASCADE ON DELETE CASCADE` for both `SCODE` and `Barcode`.
-
 ## Getting Started
 
-*(This section will likely need customization based on your actual project setup)*
+*Coming soon...*
 
 ### Prerequisites
 
 *   Android Studio (latest stable version recommended)
 *   Android SDK installed
-*   An Android device or emulator (API Level X or higher - *Specify your minSdkVersion*)
+*   An Android device or emulator (API Level 24 or higher)
 
 ### Building and Running
 
@@ -73,23 +41,24 @@ The application uses an SQLite database with the following main tables:
 
 ## Project Structure (Simplified)
 
-*(You can expand this with more details about your specific package structure)*
-
-*   `com.example.spendingtrackerlite/`
-    *   `DatabaseHelper.java`: Manages SQLite database creation, versioning, and CRUD operations.
-    *   `fragments/`: (Assumed based on our discussion) Contains UI fragments for different screens like:
-        *   `AddProductFragment.java` & `fragment_add_product.xml`
-        *   `AddTransactionFragment.java` & `fragment_add_transaction.xml`
-        *   `ViewProductsFragment.java` & `fragment_view_products.xml`
-        *   `ProductTransactionsFragment.java` & `fragment_product_transactions.xml`
-    *   `activities/`: (Assumed) Contains main activities like `MainActivity.java`.
-    *   `models/`: (Recommended) Could contain data model classes (e.g., `Product.java`, `Transaction.java`, `Store.java`).
+*   `app/src/main/`
+    *   `assets/`
+        *   `SpendingTracker.db`: Pre-populated database file that can be copied on first launch if it doesn't exist.
+    *   `java`
+        * `com.example.spendingtrackerlite/`:
+            * `adapters/`: Contains custom adapters for RecyclerView.
+            * `fragments/`: Contains UI fragments for different screens.
+                *   `AddProductFragment.java` & `fragment_add_product.xml`
+                *   `AddTransactionFragment.java` & `fragment_add_transaction.xml`
+                *   `ViewProductsFragment.java` & `fragment_view_products.xml`
+                *   `ProductTransactionsFragment.java` & `fragment_product_transactions.xml`
+            * `models/`: Contains data model classes.
+            * `DatabaseHelper.java`: Manages SQLite database creation, versioning, and CRUD operations.
     *   `res/`: Standard Android resource directory.
         *   `layout/`: XML layout files for activities and fragments.
         *   `drawable/`: Image assets.
+        *   `menu/`: Menu XML files.
         *   `values/`: Strings, colors, styles.
-    *   `assets/`:
-        *   `SpendingTracker.db`: (Implied by `copyDatabase()`) Pre-populated database file that can be copied on first launch if it doesn't exist.
 
 ## Key Code Components
 
