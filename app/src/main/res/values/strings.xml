@@ -33,4 +33,15 @@
     <string name="transactions_for_product">Transactions for Product</string>
     <string name="error_field_required">This field is required</string>
     <string name="stores">Stores</string>
+    <string name="product_category_field_hint">Product Category (e.g., Milk, Drink)</string>
+    <string name="product_variant_field_hint">Variant (e.g., 1, 2, default: 1)</string>
+    <string name="add_new_product">Add New Product</string>
+    <string name="product_barcode_hint">Barcode (e.g., 13 digits)</string>
+    <string name="product_type_field_hint">Product Type (e.g., Food, Electronics)</string>
+    <string name="product_brand_field_hint">Brand</string>
+    <string name="product_title_field_hint">Title / Product Name</string>
+    <string name="product_unit_field_hint">Unit (e.g., kg, pcs)</string>
+    <string name="product_percentage_field_hint">Percentage (Optional, e.g., 5.5)</string>
+    <string name="product_manufacturer_field_hint">Manufacturer (Optional)</string>
+    <string name="product_country_field_hint">Country of Origin (Optional)</string>
 </resources>
