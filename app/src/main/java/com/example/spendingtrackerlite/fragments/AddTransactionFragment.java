@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.spendingtrackerlite.DatabaseHelper;
 import com.example.spendingtrackerlite.R;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -25,11 +26,12 @@ import java.util.Locale;
 
 public class AddTransactionFragment extends Fragment {
 
-    private TextInputLayout tilStoreCode, tilBarcode, tilVariant, tilPrice,
+    private TextInputLayout tilStoreCode, tilBarcode, tilVariant, tilQuantity, tilPrice,
             tilDiscountedPrice, tilDate, tilTime, tilLink;
-    private TextInputEditText etStoreCode, etBarcode, etVariant, etPrice,
+    private TextInputEditText etStoreCode, etBarcode, etVariant,etQuantity, etPrice,
             etDiscountedPrice, etDate, etTime, etLink;
     private Button buttonPickDate, buttonPickTime, buttonAddTransaction;
+    private MaterialCheckBox checkboxIsPurchase;
 
     private DatabaseHelper dbHelper;
     private final Calendar calendar = Calendar.getInstance();
@@ -58,6 +60,7 @@ public class AddTransactionFragment extends Fragment {
         tilStoreCode = view.findViewById(R.id.til_transaction_store_code);
         tilBarcode = view.findViewById(R.id.til_transaction_barcode);
         tilVariant = view.findViewById(R.id.til_transaction_variant); // New
+        tilQuantity = view.findViewById(R.id.til_transaction_quantity); // New
         tilPrice = view.findViewById(R.id.til_transaction_price);
         tilDiscountedPrice = view.findViewById(R.id.til_transaction_discounted_price); // New
         tilDate = view.findViewById(R.id.til_transaction_date);
@@ -68,6 +71,7 @@ public class AddTransactionFragment extends Fragment {
         etStoreCode = view.findViewById(R.id.et_transaction_store_code);
         etBarcode = view.findViewById(R.id.et_transaction_barcode);
         etVariant = view.findViewById(R.id.et_transaction_variant); // New
+        etQuantity = view.findViewById(R.id.et_transaction_quantity); // New
         etPrice = view.findViewById(R.id.et_transaction_price);
         etDiscountedPrice = view.findViewById(R.id.et_transaction_discounted_price); // New
         etDate = view.findViewById(R.id.et_transaction_date);
@@ -78,6 +82,7 @@ public class AddTransactionFragment extends Fragment {
         buttonPickDate = view.findViewById(R.id.button_pick_date);
         buttonPickTime = view.findViewById(R.id.button_pick_time);
         buttonAddTransaction = view.findViewById(R.id.button_add_transaction);
+        checkboxIsPurchase = view.findViewById(R.id.checkbox_is_purchase);
 
         setupDateTimePickers();
 
@@ -135,6 +140,7 @@ public class AddTransactionFragment extends Fragment {
         tilStoreCode.setError(null);
         tilBarcode.setError(null);
         tilVariant.setError(null);
+        tilQuantity.setError(null);
         tilPrice.setError(null);
         tilDiscountedPrice.setError(null);
         tilDate.setError(null);
@@ -145,11 +151,13 @@ public class AddTransactionFragment extends Fragment {
         String storeCode = etStoreCode.getText().toString().trim();
         String barcode = etBarcode.getText().toString().trim();
         String variantStr = etVariant.getText().toString().trim();
+        String quantityStr = etQuantity.getText().toString().trim();
         String priceStr = etPrice.getText().toString().trim();
         String discountedPriceStr = etDiscountedPrice.getText().toString().trim();
         String date = etDate.getText().toString().trim();
         String time = etTime.getText().toString().trim();
         String link = etLink.getText().toString().trim();
+        boolean isPurchase = checkboxIsPurchase.isChecked();
 
         boolean cancel = false;
         View focusView = null;
@@ -199,6 +207,27 @@ public class AddTransactionFragment extends Fragment {
                 cancel = true;
             }
         }
+
+        int quantity = 1; // Default
+        if (TextUtils.isEmpty(quantityStr)) {
+            // Optional: etTransactionQuantity.setError("Quantity is required"); cancel = true;
+            // Or just use default of 1
+        } else {
+            try {
+                quantity = Integer.parseInt(quantityStr);
+                if (quantity <= 0) {
+                    etQuantity.setError("Quantity must be positive");
+                    focusView = etQuantity;
+                    cancel = true;
+                }
+            } catch (NumberFormatException e) {
+                etQuantity.setError("Invalid number");
+                focusView = etQuantity;
+                cancel = true;
+            }
+        }
+
+
 
         // Validate Barcode + Variant combination exists in Products (only if individual fields are valid so far)
         if (!cancel && !TextUtils.isEmpty(barcode)) {
@@ -285,11 +314,13 @@ public class AddTransactionFragment extends Fragment {
                     storeCode,
                     barcode,
                     variant,    // New
+                    quantity,   // New
                     price,      // Double
                     discountedPrice, // Double or null
                     date,
                     time,
-                    link.isEmpty() ? null : link // Pass null if empty
+                    link.isEmpty() ? null : link, // Pass null if empty
+                    isPurchase
             );
 
             clearForm();
@@ -300,6 +331,7 @@ public class AddTransactionFragment extends Fragment {
         etStoreCode.setText("");
         etBarcode.setText("");
         etVariant.setText("");
+        etQuantity.setText("");
         etPrice.setText("");
         etDiscountedPrice.setText("");
         etDate.setText("");
@@ -309,11 +341,13 @@ public class AddTransactionFragment extends Fragment {
         tilStoreCode.setError(null);
         tilBarcode.setError(null);
         tilVariant.setError(null);
+        tilQuantity.setError(null);
         tilPrice.setError(null);
         tilDiscountedPrice.setError(null);
         tilDate.setError(null);
         tilTime.setError(null);
         tilLink.setError(null);
+        checkboxIsPurchase.setChecked(true);
 
         etStoreCode.requestFocus(); // Focus first field
     }

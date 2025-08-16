@@ -1,239 +1,269 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:fillViewport="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    tools:context=".fragments.AddTransactionFragment">
+
+    <TextView
+        android:id="@+id/tv_add_transaction_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Add New Transaction"
+        android:textAppearance="?attr/textAppearanceHeadline5"
+        android:gravity="center_horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Store Code -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_transaction_store_code"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Store Code"
+        app:errorEnabled="true"
+        app:layout_constraintTop_toBottomOf="@id/tv_add_transaction_header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_transaction_store_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapCharacters"
+            android:maxLines="1"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Barcode -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_transaction_barcode"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Product Barcode"
+        app:errorEnabled="true"
+        app:layout_constraintTop_toBottomOf="@id/til_transaction_store_code"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_transaction_barcode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="13"
+            android:maxLines="1"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Variant -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_transaction_variant"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Product Variant (default: 1)"
+        app:errorEnabled="true"
+        app:helperText="Defaults to 1 if left empty"
+        app:layout_constraintTop_toBottomOf="@id/til_transaction_barcode"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_transaction_variant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLines="1"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Quantity (NEW FIELD) -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_transaction_quantity"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Quantity (default: 1)"
+        app:errorEnabled="true"
+        app:helperText="Defaults to 1 if left empty"
+        app:layout_constraintTop_toBottomOf="@id/til_transaction_variant"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_transaction_quantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLines="1"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Price -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_transaction_price"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Price (per unit)"
+        app:errorEnabled="true"
+        app:layout_constraintTop_toBottomOf="@id/til_transaction_quantity"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_transaction_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:maxLines="1"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Discounted Price (Optional) -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_transaction_discounted_price"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Discounted Price (per unit, Optional)"
+        app:errorEnabled="true"
+        app:layout_constraintTop_toBottomOf="@id/til_transaction_price"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_transaction_discounted_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:maxLines="1"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Date -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_transaction_date"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:hint="Date (YYYY-MM-DD)"
+        app:errorEnabled="true"
+        app:layout_constraintTop_toBottomOf="@id/til_transaction_discounted_price"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_pick_date">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_transaction_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:focusable="false"
+            android:maxLines="1"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/button_pick_date"
+        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="Pick"
+        app:icon="@drawable/ic_calendar"
+        app:layout_constraintTop_toTopOf="@id/til_transaction_date"
+        app:layout_constraintBottom_toBottomOf="@id/til_transaction_date"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/til_transaction_date" />
+
+    <!-- Time -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_transaction_time"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:hint="Time (HH:MM)"
+        app:errorEnabled="true"
+        app:layout_constraintTop_toBottomOf="@id/til_transaction_date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_pick_time">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_transaction_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="time"
+            android:focusable="false"
+            android:maxLines="1"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/button_pick_time"
+        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="Pick"
+        app:icon="@drawable/ic_time"
+        app:layout_constraintTop_toTopOf="@id/til_transaction_time"
+        app:layout_constraintBottom_toBottomOf="@id/til_transaction_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/til_transaction_time" />
+
+    <!-- Link (Optional) -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_transaction_link"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Link (Optional, e.g., to receipt)"
+        app:errorEnabled="true"
+        app:layout_constraintTop_toBottomOf="@id/til_transaction_time"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_transaction_link"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textUri"
+            android:maxLines="1"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkbox_is_purchase"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        tools:context=".fragments.AddTransactionFragment">
+        android:layout_marginTop="16dp"
+        android:text="@string/this_is_an_actual_purchase"
+        android:checked="true"
+        app:layout_constraintTop_toBottomOf="@id/til_transaction_link"/>
 
-        <TextView
-            android:id="@+id/tv_add_transaction_header"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Add New Transaction"
-            android:textAppearance="?attr/textAppearanceHeadline5"
-            android:gravity="center_horizontal"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginBottom="24dp"/>
-
-        <!-- Store Code -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_transaction_store_code"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Store Code"
-            app:errorEnabled="true"
-            app:layout_constraintTop_toBottomOf="@id/tv_add_transaction_header"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_transaction_store_code"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textCapCharacters"
-                android:maxLines="1"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Barcode -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_transaction_barcode"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Product Barcode"
-            app:errorEnabled="true"
-            app:layout_constraintTop_toBottomOf="@id/til_transaction_store_code"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_transaction_barcode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:maxLength="13"
-                android:maxLines="1"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Variant -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_transaction_variant"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Product Variant (default: 1)"
-            app:errorEnabled="true"
-            app:helperText="Defaults to 1 if left empty"
-            app:layout_constraintTop_toBottomOf="@id/til_transaction_barcode"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_transaction_variant"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:maxLines="1"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Price -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_transaction_price"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Price"
-            app:errorEnabled="true"
-            app:layout_constraintTop_toBottomOf="@id/til_transaction_variant"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_transaction_price"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                android:maxLines="1"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Discounted Price (Optional) -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_transaction_discounted_price"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Discounted Price (Optional)"
-            app:errorEnabled="true"
-            app:layout_constraintTop_toBottomOf="@id/til_transaction_price"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_transaction_discounted_price"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                android:maxLines="1"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Date -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_transaction_date"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:hint="Date (YYYY-MM-DD)"
-            app:errorEnabled="true"
-            app:layout_constraintTop_toBottomOf="@id/til_transaction_discounted_price"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button_pick_date">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_transaction_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="date"
-                android:focusable="false"
-                android:maxLines="1"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/button_pick_date"
-            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:text="Pick"
-            app:icon="@drawable/ic_calendar"
-            app:layout_constraintTop_toTopOf="@id/til_transaction_date"
-            app:layout_constraintBottom_toBottomOf="@id/til_transaction_date"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/til_transaction_date" />
-
-        <!-- Time -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_transaction_time"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:hint="Time (HH:MM)"
-            app:errorEnabled="true"
-            app:layout_constraintTop_toBottomOf="@id/til_transaction_date"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button_pick_time">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_transaction_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="time"
-                android:focusable="false"
-                android:maxLines="1"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/button_pick_time"
-            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:text="Pick"
-            app:icon="@drawable/ic_time"
-            app:layout_constraintTop_toTopOf="@id/til_transaction_time"
-            app:layout_constraintBottom_toBottomOf="@id/til_transaction_time"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/til_transaction_time" />
-
-        <!-- Link (Optional) -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_transaction_link"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Link (Optional, e.g., to receipt)"
-            app:errorEnabled="true"
-            app:layout_constraintTop_toBottomOf="@id/til_transaction_time"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_transaction_link"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textUri"
-                android:maxLines="1"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/button_add_transaction"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="16dp"
-            android:text="@string/add_transaction"
-            app:layout_constraintTop_toBottomOf="@id/til_transaction_link"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.0" /> <!-- Use bias 0.0 if more content might make it scroll-->
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/button_add_transaction"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/add_transaction"
+        app:layout_constraintTop_toBottomOf="@id/checkbox_is_purchase"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+</androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
