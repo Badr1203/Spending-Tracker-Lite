@@ -46,4 +46,12 @@
     <string name="product_country_field_hint">Country of Origin (Optional)</string>
     <string name="no_products_found">No products found.\n</string>
     <string name="search_product_hint">Search</string>
+    <string name="this_is_an_actual_purchase">This is an actual purchase</string>
+    <string name="update_product">Update Product</string>
+    <string name="add_new_store">Add New Store</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="add_store">Add Store</string>
+    <string name="store_code_scode">Store Code (SCODE)</string>
+    <string name="store_name">Store Name</string>
 </resources>
