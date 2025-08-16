@@ -9,15 +9,24 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.spendingtrackerlite.DatabaseHelper;
 import com.example.spendingtrackerlite.R;
+import com.example.spendingtrackerlite.models.Product;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.Locale;
+
 public class AddProductFragment extends Fragment {
     public AddProductFragment() {}
+
+    private static final String ARG_EDIT_PRODUCT_ID = "edit_product_id";
+    private long editingProductId = -1; // -1 indicates "add mode", otherwise "edit mode"
+    private Product existingProductToEdit;
+
 
     private TextInputLayout tilProductBarcode, tilProductVariant, tilProductCategory, tilProductType, tilProductBrand,
             tilProductTitle, tilProductUnit, tilProductQuantity, tilProductPercentage;
@@ -25,12 +34,35 @@ public class AddProductFragment extends Fragment {
     private TextInputEditText etProductBarcode, etProductVariant,etProductCategory, etProductType, etProductBrand,
             etProductTitle, etProductUnit, etProductQuantity, etProductPercentage,
             etProductManufacturer, etProductCountry;
-
     private DatabaseHelper dbHelper;
 
     public static AddProductFragment newInstance() {
         return new AddProductFragment();
     }
+
+    /**
+     * Factory method for creating a new instance for editing an existing product.
+     * @param productId The ID of the product to edit.
+     * @return A new instance of fragment AddProductFragment.
+     */
+    public static AddProductFragment newInstanceForEdit(long productId) {
+        AddProductFragment fragment = new AddProductFragment();
+        Bundle args = new Bundle();
+        args.putLong(ARG_EDIT_PRODUCT_ID, productId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        dbHelper = new DatabaseHelper(getContext()); // Initialize dbHelper
+
+        if (getArguments() != null) {
+            editingProductId = getArguments().getLong(ARG_EDIT_PRODUCT_ID, -1);
+        }
+    }
+
 
     @Nullable
     @Override
@@ -63,17 +95,72 @@ public class AddProductFragment extends Fragment {
         etProductManufacturer = view.findViewById(R.id.et_product_manufacturer);
         etProductCountry = view.findViewById(R.id.et_product_country);
 
-        Button buttonAddProduct = view.findViewById(R.id.button_add_product);
+        Button buttonAddOrUpdateProduct = view.findViewById(R.id.button_add_product);
 
         dbHelper = new DatabaseHelper(getActivity());
-        dbHelper.createDatabase();
 
-        buttonAddProduct.setOnClickListener(v -> attemptAddProduct());
+        if (editingProductId != -1) {
+            // Edit Mode: Load product data and pre-fill the form
+            loadProductDetailsForEditing();
+            buttonAddOrUpdateProduct.setText(R.string.update_product);
+            // Optionally, change the fragment title or toolbar title here
+            if (getActivity() != null && getActivity().getActionBar() != null) {
+                getActivity().getActionBar().setTitle("Edit Product");
+            } else if (getActivity() instanceof AppCompatActivity) {
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Edit Product");
+            }
+        } else {
+            // Add Mode
+            buttonAddOrUpdateProduct.setText(R.string.add_product);
+            // Optionally, set default title
+            if (getActivity() != null && getActivity().getActionBar() != null) {
+                getActivity().getActionBar().setTitle("Add New Product");
+            } else if (getActivity() instanceof AppCompatActivity) {
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.add_new_product);
+            }
+        }
+
+        buttonAddOrUpdateProduct.setOnClickListener(v -> attemptAddOrUpdateProduct());
+
+
 
         return view;
     }
+    private void loadProductDetailsForEditing() {
+        if (editingProductId != -1) {
+            // Fetch product from DB using editingProductId
+            // This method needs to be added to DatabaseHelper to fetch a single product by ID
+            existingProductToEdit = dbHelper.getProductById(editingProductId);
 
-    private void attemptAddProduct() {
+            if (existingProductToEdit != null) {
+                etProductBarcode.setText(existingProductToEdit.getBarcode());
+                etProductVariant.setText(String.valueOf(existingProductToEdit.getVariant()));
+                etProductCategory.setText(existingProductToEdit.getCategory());
+                etProductType.setText(existingProductToEdit.getType());
+                etProductBrand.setText(existingProductToEdit.getBrand());
+                etProductTitle.setText(existingProductToEdit.getTitle());
+                etProductQuantity.setText(String.format(Locale.US, "%.2f", existingProductToEdit.getQuantity()));
+                etProductUnit.setText(String.valueOf(existingProductToEdit.getUnit()));
+                if (existingProductToEdit.getPercentage() != null) {
+                    etProductPercentage.setText(String.format(Locale.US, "%.1f", existingProductToEdit.getPercentage()));
+                } else {
+                    etProductPercentage.setText("");
+                }
+                etProductManufacturer.setText(existingProductToEdit.getManufacturer() != null ? existingProductToEdit.getManufacturer() : "");
+                etProductCountry.setText(existingProductToEdit.getCountry() != null ? existingProductToEdit.getCountry() : "");
+
+                // You might want to make barcode and variant non-editable in edit mode
+                etProductBarcode.setEnabled(false);
+                etProductVariant.setEnabled(false);
+            } else {
+                Toast.makeText(getContext(), "Error: Could not load product details for editing.", Toast.LENGTH_LONG).show();
+                // Optionally, pop back or disable the form
+                if (getActivity() != null) getActivity().getSupportFragmentManager().popBackStack();
+            }
+        }
+    }
+
+    private void attemptAddOrUpdateProduct() {
         // Reset errors
         tilProductBarcode.setError(null);
         tilProductVariant.setError(null);
@@ -106,10 +193,6 @@ public class AddProductFragment extends Fragment {
             tilProductBarcode.setError("Barcode should be 13 digits long.");
             focusView = etProductBarcode;
             cancel = true;
-         } else if (dbHelper.barcodeExists(barcode)) {
-             tilProductBarcode.setError("Barcode already exists.");
-             focusView = etProductBarcode;
-             cancel = true;
          }
 
         // Validate and parse Variant (defaults to 1)
@@ -125,16 +208,6 @@ public class AddProductFragment extends Fragment {
             } catch (NumberFormatException e) {
                 tilProductVariant.setError("Invalid number for Variant.");
                 if (focusView == null) focusView = etProductVariant;
-                cancel = true;
-            }
-        }
-
-        // Validate Barcode + Variant uniqueness (only if barcode and variant itself are valid so far)
-        if (!cancel) {
-            if (dbHelper.productVariantExists(barcode, variant)) {
-                tilProductVariant.setError("This Barcode + Variant combination already exists.");
-                // Or set error on tilProductBarcode, or both
-                focusView = etProductBarcode;
                 cancel = true;
             }
         }
@@ -201,19 +274,54 @@ public class AddProductFragment extends Fragment {
                 focusView.requestFocus();
             }
         } else {
-            dbHelper.insertProduct(
-                    barcode,
-                    variant,
-                    category,
-                    type,
-                    brand,
-                    title,
-                    unit,
-                    quantity,   // Already Double
-                    percentage, // Already Double or null
-                    manufacturer.isEmpty() ? null : manufacturer, // Pass null if empty
-                    country.isEmpty() ? null : country          // Pass null if empty
-            );
+
+            if (editingProductId != -1 && existingProductToEdit != null) {
+                // UPDATE existing product
+                // You'll need an updateProduct method in DatabaseHelper
+                boolean success = dbHelper.updateProduct(
+                        editingProductId, // Pass the ID
+                        barcode, variant,category, type, brand, title, unit,
+                        quantity, percentage, manufacturer, country
+                );
+                if (success) {
+                    Toast.makeText(getContext(), "Product Updated Successfully", Toast.LENGTH_SHORT).show();
+                    if (getActivity() != null) getActivity().getSupportFragmentManager().popBackStack(); // Go back
+                } else {
+                    Toast.makeText(getContext(), "Failed to Update Product. Check logs.", Toast.LENGTH_LONG).show();
+                }
+
+
+            } else {
+
+                // ADD new product (your existing logic)
+                if (dbHelper.productVariantExists(barcode, variant)) {
+                    tilProductVariant.setError("This Barcode + Variant combination already exists.");
+                    // Or set error on tilProductBarcode, or both
+                    focusView = etProductBarcode;
+                    focusView.requestFocus();
+                } else if (dbHelper.barcodeExists(barcode)) {
+                    tilProductBarcode.setError("Barcode already exists.");
+                    focusView = etProductBarcode;
+                    focusView.requestFocus();
+                } else {
+                    dbHelper.insertProduct(
+                            barcode,
+                            variant,
+                            category,
+                            type,
+                            brand,
+                            title,
+                            unit,
+                            quantity,   // Already Double
+                            percentage, // Already Double or null
+                            manufacturer.isEmpty() ? null : manufacturer, // Pass null if empty
+                            country.isEmpty() ? null : country          // Pass null if empty
+                    );
+                    // Toast message handled by insertProduct or show one here
+                    Toast.makeText(getContext(), "Product Added Successfully", Toast.LENGTH_SHORT).show();
+                    clearForm(); // Clear form for next entry
+                }
+            }
 
             clearForm();
         }
@@ -221,6 +329,7 @@ public class AddProductFragment extends Fragment {
     private void clearForm() {
         etProductBarcode.setText("");
         etProductVariant.setText("");
+        etProductCategory.setText("");
         etProductType.setText("");
         etProductBrand.setText("");
         etProductTitle.setText("");
