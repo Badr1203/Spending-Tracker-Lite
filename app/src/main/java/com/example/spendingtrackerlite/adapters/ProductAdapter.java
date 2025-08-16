@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.spendingtrackerlite.R;
 import com.example.spendingtrackerlite.models.Product;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -26,7 +27,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     // Interface for click events
     public interface OnProductClickListener {
         void onProductClick(Product product);
-        // void onProductLongClick(Product product); // If you need long click
+        void onProductLongClick(Product product);
     }
 
     public ProductAdapter(Context context, List<Product> productList, OnProductClickListener listener) {
@@ -93,8 +94,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         }
 
         public void bind(final Product product, final OnProductClickListener listener) {
-            tvProductTitleBrand.setText(String.format(Locale.getDefault(), "%s (%s)",
-                    product.getTitle(), product.getBrand()));
+            DecimalFormat df = new DecimalFormat("#.##");
+            tvProductTitleBrand.setText(String.format(Locale.getDefault(), "%s %s %s %s",
+                    product.getBrand(), df.format(product.getQuantity()), product.getUnit(), product.getTitle()));
 
             tvProductBarcodeVariant.setText(String.format(Locale.getDefault(), "Barcode: %s, Variant: %d",
                     product.getBarcode(), product.getVariant()));
@@ -140,6 +142,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 if (listener != null) {
                     listener.onProductClick(product);
                 }
+            });
+            // Set long click listener
+            itemView.setOnLongClickListener(v -> {
+                if (listener != null) {
+                    listener.onProductLongClick(product);
+                    return true; // Consume the long click
+                }
+                return false; // Don't consume if no listener
             });
         }
     }
