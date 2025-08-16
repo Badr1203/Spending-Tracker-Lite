@@ -11,7 +11,7 @@ android {
         minSdk = 24
         targetSdk = 35
         versionCode = 1
-        versionName = "1.1.0"
+        versionName = "1.0.${(System.currentTimeMillis() / 1000 / 60).toInt()}" // Example: Major.Minor.MinutesSinceEpoch
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
