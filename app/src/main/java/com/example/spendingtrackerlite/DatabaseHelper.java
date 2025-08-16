@@ -10,24 +10,18 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.spendingtrackerlite.models.Product;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "SpendingTracker.db";
-    private static final String DATABASE_PATH = "/data/data/com.example.spendingtrackerlite/databases/";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
 
     //Tables
     private static final String TABLE_PRODUCTS = "Products", TABLE_TRANSACTIONS = "Transactions", TABLE_STORES = "Stores";
@@ -39,8 +33,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // --- Columns for 'Stores' Table ---
     public static final String COL_S_SCODE = "SCODE", COL_S_NAME = "Name", COL_S_LONGITUDE = "Longitude", COL_S_LATITUDE = "Latitude";
     // --- Columns for 'Transactions' Table ---
-    public static final String COL_T_PRICE = "Price", COL_T_DISCOUNTED_PRICE = "Discounted_price",
-    COL_T_DATE = "Date", COL_T_TIME = "Time", COL_T_LINK = "Link";
+    public static final String COL_T_QUANTITY = "Quantity", COL_T_PRICE = "Price", COL_T_DISCOUNTED_PRICE = "Discounted_price",
+    COL_T_DATE = "Date", COL_T_TIME = "Time", COL_T_LINK = "Link", COL_T_IS_PURCHASE = "IsPurchase";
+
     private final Context context;
 
     public DatabaseHelper(Context context) {
@@ -73,8 +68,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String createStoresTable = "CREATE TABLE " + TABLE_STORES + " (" +
                 COL_S_SCODE + " TEXT PRIMARY KEY NOT NULL, " + // Using COL_SCODE from Stores
                 COL_S_NAME + " TEXT DEFAULT NULL, " +
-                COL_S_LONGITUDE + " REAL NOT NULL, " +
-                COL_S_LATITUDE + " REAL NOT NULL" +
+                COL_S_LATITUDE + " REAL NOT NULL," +
+                COL_S_LONGITUDE + " REAL NOT NULL " +
                 ");";
         db.execSQL(createStoresTable);
 
@@ -82,11 +77,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_S_SCODE + " TEXT NOT NULL, " +
                 COL_P_BARCODE + " CHAR(13) NOT NULL, " +
                 COL_P_VARIANT + " INTEGER NOT NULL DEFAULT 1, " +
+                COL_T_QUANTITY + " INTEGER NOT NULL DEFAULT 1, " +
                 COL_T_PRICE + " REAL NOT NULL, " + // Using REAL for DECIMAL types in SQLite
                 COL_T_DISCOUNTED_PRICE + " REAL DEFAULT NULL, " + // Using REAL
                 COL_T_DATE + " TEXT NOT NULL, " +
                 COL_T_TIME + " TEXT NOT NULL, " +
                 COL_T_LINK + " TEXT DEFAULT NULL, " +
+                COL_T_IS_PURCHASE + " INTEGER NOT NULL DEFAULT 1," +
                 "PRIMARY KEY (" + COL_S_SCODE + ", " + COL_P_BARCODE + ", " + COL_P_VARIANT + ", " + COL_T_DATE + ", " + COL_T_TIME + ")," +
                 "FOREIGN KEY (" + COL_S_SCODE + ") REFERENCES " + TABLE_STORES + "(" + COL_S_SCODE + ") ON UPDATE CASCADE ON DELETE CASCADE, " +
                 "FOREIGN KEY (" + COL_P_BARCODE + ", " + COL_P_VARIANT + ") REFERENCES " + TABLE_PRODUCTS + "(" + COL_P_BARCODE + ", " + COL_P_VARIANT + ") ON UPDATE CASCADE ON DELETE CASCADE" +
@@ -96,18 +93,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(@NonNull SQLiteDatabase db, int oldVersion, int newVersion) {
-        // This is a simple example. For production apps, you'd use a more robust migration strategy.
-        // See: https://developer.android.com/training/data-storage/sqlite/migrate
-        Log.w("DatabaseHelper", "Upgrading database from version " + oldVersion + " to " + newVersion);
-        db.execSQL("PRAGMA foreign_keys = OFF;"); // Disable FKs for smoother alteration/dropping if needed
+        Log.w("DB_UPGRADE", "Upgrading database from version " + oldVersion + " to "
+                + newVersion);
 
-        if (oldVersion < 2) {
-            // Drop older tables if they exist (simple approach, data will be lost)
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRANSACTIONS);
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCTS);
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_STORES);
-            // Recreate tables with the new schema
-            onCreate(db); // This will re-enable FKs because onCreate calls PRAGMA foreign_keys = ON;
+        if (oldVersion < DATABASE_VERSION) {
+            try {
+                db.beginTransaction();
+                Log.i("DB_UPGRADE", "Adding column " + COL_T_QUANTITY + " to " + TABLE_TRANSACTIONS);
+                db.execSQL("ALTER TABLE " + TABLE_TRANSACTIONS + " ADD COLUMN " + COL_T_QUANTITY + " INTEGER NOT NULL DEFAULT 1;");
+                db.setTransactionSuccessful();
+                Log.i("DB_UPGRADE", "Column " + COL_T_QUANTITY + " added successfully.");
+            } catch (Exception e) {
+                Log.e("DB_UPGRADE", "Error adding " + COL_T_QUANTITY + " column to " + TABLE_TRANSACTIONS, e);
+            } finally {
+                db.endTransaction();
+            }
         }
     }
 
@@ -140,18 +140,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }}
     }
 
-    public void insertTransaction(String scode, String barcode, int variant, Double price, Double discounted_price, String date, String time, String link) {
+        public void insertTransaction(String scode, String barcode, int variant, int quantity,
+                                  Double price, Double discounted_price, String date,
+                                  String time, String link, boolean isPurchase) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
         cv.put(COL_S_SCODE, scode);
         cv.put(COL_P_BARCODE, barcode);
         cv.put(COL_P_VARIANT, variant);
+        cv.put(COL_T_QUANTITY, quantity);
         cv.put(COL_T_PRICE, price);
         cv.put(COL_T_DISCOUNTED_PRICE, discounted_price);
         cv.put(COL_T_DATE, date);
         cv.put(COL_T_TIME, time);
         cv.put(COL_T_LINK, link);
+        cv.put(COL_T_IS_PURCHASE, isPurchase ? 1 : 0);
 
         long result = -1;
         try {
@@ -220,6 +224,141 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return exists;
     }
 
+    // Inside DatabaseHelper.java
+
+// ... (other methods) ...
+
+    public Product getProductById(long productId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        Product product = null;
+
+        String query = "SELECT * FROM " + TABLE_PRODUCTS + " WHERE " + COL_P_ID + " = ?";
+        try {
+            cursor = db.rawQuery(query, new String[]{String.valueOf(productId)});
+
+            if (cursor != null && cursor.moveToFirst()) {
+                int idColIdx = cursor.getColumnIndexOrThrow(COL_P_ID);
+                int barcodeColIdx = cursor.getColumnIndexOrThrow(COL_P_BARCODE);
+                int variantColIdx = cursor.getColumnIndexOrThrow(COL_P_VARIANT);
+                int categoryColIdx = cursor.getColumnIndexOrThrow(COL_P_CATEGORY);
+                int typeColIdx = cursor.getColumnIndexOrThrow(COL_P_TYPE);
+                int brandColIdx = cursor.getColumnIndexOrThrow(COL_P_BRAND);
+                int titleColIdx = cursor.getColumnIndexOrThrow(COL_P_TITLE);
+                int unitColIdx = cursor.getColumnIndexOrThrow(COL_P_UNIT);
+                int quantityColIdx = cursor.getColumnIndexOrThrow(COL_P_QUANTITY);
+                int percentageColIdx = cursor.getColumnIndexOrThrow(COL_P_PERCENTAGE);
+                int manufacturerColIdx = cursor.getColumnIndexOrThrow(COL_P_MANUFACTURER);
+                int countryColIdx = cursor.getColumnIndexOrThrow(COL_P_COUNTRY);
+
+                long id = cursor.getLong(idColIdx);
+                String barcode = cursor.getString(barcodeColIdx);
+                int variant = cursor.getInt(variantColIdx);
+                String category = cursor.getString(categoryColIdx);
+                String type = cursor.getString(typeColIdx);
+                String brand = cursor.getString(brandColIdx);
+                String title = cursor.getString(titleColIdx);
+                String unit = cursor.getString(unitColIdx);
+                double quantity = cursor.getDouble(quantityColIdx);
+                Double percentage = cursor.isNull(percentageColIdx) ? null : cursor.getDouble(percentageColIdx);
+                String manufacturer = cursor.isNull(manufacturerColIdx) ? null : cursor.getString(manufacturerColIdx);
+                String country = cursor.isNull(countryColIdx) ? null : cursor.getString(countryColIdx);
+
+                product = new Product(id, barcode, variant,category, type, brand, title, unit,
+                        quantity, percentage, manufacturer, country);
+            }
+        } catch (Exception e) {
+            Log.e("DB_GET_PRODUCT_BY_ID", "Error getting product by ID: " + productId, e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return product;
+    }
+
+
+    public boolean updateProduct(long productId, String barcode, int variant,String Category, String type, String brand,
+                                 String title, String unit, double quantity, @Nullable Double percentage,
+                                 @Nullable String manufacturer, @Nullable String country) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        // It's generally not recommended to allow editing barcode and variant easily
+        // as they form the primary key for identity. If you do, ensure uniqueness.
+        // For this example, I'm allowing them to be updated.
+        cv.put(COL_P_BARCODE, barcode);
+        cv.put(COL_P_VARIANT, variant);
+        cv.put(COL_P_CATEGORY, Category);
+        cv.put(COL_P_TYPE, type);
+        cv.put(COL_P_BRAND, brand);
+        cv.put(COL_P_TITLE, title);
+        cv.put(COL_P_UNIT, unit);
+        cv.put(COL_P_QUANTITY, quantity);
+
+        if (percentage != null) {
+            cv.put(COL_P_PERCENTAGE, percentage);
+        } else {
+            cv.putNull(COL_P_PERCENTAGE); // Important to handle null for optional fields
+        }
+        if (manufacturer != null && !manufacturer.isEmpty()) {
+            cv.put(COL_P_MANUFACTURER, manufacturer);
+        } else {
+            cv.putNull(COL_P_MANUFACTURER);
+        }
+        if (country != null && !country.isEmpty()) {
+            cv.put(COL_P_COUNTRY, country);
+        } else {
+            cv.putNull(COL_P_COUNTRY);
+        }
+
+        int rowsAffected = -1;
+        try {
+            db.beginTransaction();
+            // Before updating, check if the new barcode+variant combination (if changed)
+            // already exists for a *different* product ID.
+            if (isUpdatingToExistingBarcodeVariant(db, productId, barcode, variant)) {
+                Toast.makeText(context, "Update failed: Another product with this barcode and variant already exists.", Toast.LENGTH_LONG).show();
+                return false;
+            }
+
+            rowsAffected = db.update(TABLE_PRODUCTS, cv, COL_P_ID + " = ?", new String[]{String.valueOf(productId)});
+            if (rowsAffected > 0) {
+                db.setTransactionSuccessful();
+                // Toast.makeText(context, "Product Updated Successfully", Toast.LENGTH_SHORT).show(); // Handled in Fragment
+                return true;
+            } else {
+                // Toast.makeText(context, "Failed to Update Product. No rows affected or error.", Toast.LENGTH_LONG).show();
+                Log.w("DB_UPDATE_PRODUCT", "Failed to update product ID: " + productId + ". Rows affected: " + rowsAffected);
+                return false;
+            }
+        } catch (Exception e) {
+            Log.e("DB_UPDATE_PRODUCT", "Error updating product ID: " + productId, e);
+            // Toast.makeText(context, "Database error during update: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            return false;
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    // Helper method to check for barcode+variant collision during update
+    private boolean isUpdatingToExistingBarcodeVariant(SQLiteDatabase db, long currentProductId, String newBarcode, int newVariant) {
+        Cursor cursor = null;
+        String query = "SELECT " + COL_P_ID + " FROM " + TABLE_PRODUCTS +
+                " WHERE " + COL_P_BARCODE + " = ? AND " + COL_P_VARIANT + " = ? AND " +
+                COL_P_ID + " != ?";
+        try {
+            cursor = db.rawQuery(query, new String[]{newBarcode, String.valueOf(newVariant), String.valueOf(currentProductId)});
+            return cursor != null && cursor.getCount() > 0;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+
+
     // Example in DatabaseHelper.java
     public List<Product> getAllProducts() {
         List<Product> productList = new ArrayList<>();
@@ -286,6 +425,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // Query to get transactions for a specific barcode, including variant information.
         // We also join with Products to potentially get the product title for better display.
+
+
         String query = "SELECT T." + COL_S_SCODE + ", " +
                 "S." + COL_S_NAME + " AS StoreName, " +
                 "T." + COL_P_VARIANT + ", " +         // Get the variant from Transactions
@@ -294,7 +435,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "T." + COL_T_DISCOUNTED_PRICE + ", " + // Get discounted price
                 "T." + COL_T_DATE + ", " +
                 "T." + COL_T_TIME + ", " +
-                "T." + COL_T_LINK + " " +             // Get the link
+                "T." + COL_T_LINK + ", " +             // Get the link
+                "T." + COL_T_IS_PURCHASE + " " +      // Get the isPurchase flag
                 "FROM " + TABLE_TRANSACTIONS + " T " +
                 "LEFT JOIN " + TABLE_STORES + " S ON T." + COL_S_SCODE + " = S." + COL_S_SCODE + " " +
                 "LEFT JOIN " + TABLE_PRODUCTS + " P ON T." + COL_P_BARCODE + " = P." + COL_P_BARCODE +
@@ -321,6 +463,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 int dateColIdx = cursor.getColumnIndexOrThrow(COL_T_DATE);
                 int timeColIdx = cursor.getColumnIndexOrThrow(COL_T_TIME);
                 int linkColIdx = cursor.getColumnIndexOrThrow(COL_T_LINK);
+                int isPurchaseColIdx = cursor.getColumnIndexOrThrow(COL_T_IS_PURCHASE);
 
                 DecimalFormat df = new DecimalFormat("#0.00"); // Format to always show two decimal places
 
@@ -337,7 +480,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     String date = cursor.getString(dateColIdx);
                     String time = cursor.getString(timeColIdx);
                     String link = cursor.getString(linkColIdx);
-
+                    int isPurchase = cursor.getInt(isPurchaseColIdx);
+                    boolean isActualPurchase = (isPurchase == 1);
                     String displayStoreName = (storeName != null && !storeName.isEmpty()) ? storeName : scode;
                     String displayProductInfo = (productTitle != null && !productTitle.isEmpty()) ?
                             productTitle + " (Variant: " + variant + ")" :
@@ -347,7 +491,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     StringBuilder transactionDetail = new StringBuilder();
                     transactionDetail.append("Product: ").append(displayProductInfo);
                     transactionDetail.append("\nStore: ").append(displayStoreName);
-
+                    if (isActualPurchase) {
+                        transactionDetail.append("\nType: Purchase");
+                    } else {
+                        transactionDetail.append("\nType: Price Check");
+                    }
 
                     // Handle price and discounted price display
                     transactionDetail.append("\nPrice: ").append(df.format(price));
@@ -357,9 +505,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                     transactionDetail.append("\nDate: ").append(date).append(" ").append(time);
 
-                    if (link != null && !link.isEmpty()) {
+                    /*if (link != null && !link.isEmpty()) {
                         transactionDetail.append("\nLink: ").append(link);
-                    }
+                    }*/
 
                     transactionList.add(transactionDetail.toString());
                 } while (cursor.moveToNext());
@@ -447,40 +595,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
         return exists;
-    }
-
-
-
-    public void createDatabase() {
-        boolean dbExists = checkDatabase();
-        if (!dbExists) {
-            this.getReadableDatabase(); // creates empty db
-            copyDatabase();
-        }
-    }
-
-    private boolean checkDatabase() {
-        File dbFile = new File(DATABASE_PATH + DATABASE_NAME);
-        return dbFile.exists();
-    }
-
-    private void copyDatabase() {
-        try {
-            InputStream input = context.getAssets().open(DATABASE_NAME);
-            OutputStream output = new FileOutputStream(DATABASE_PATH + DATABASE_NAME);
-
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = input.read(buffer)) > 0) {
-                output.write(buffer, 0, length);
-            }
-
-            output.flush();
-            output.close();
-            input.close();
-        } catch (IOException e) {
-            Log.e("CopyDatabase", "Failed to copy DB", e);
-        }
     }
 
     public boolean barcodeExists(String barcode) {
