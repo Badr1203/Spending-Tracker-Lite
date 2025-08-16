@@ -24,6 +24,7 @@ CREATE TABLE Products (
     Category TEXT NOT NULL,                 -- Product category (e.g., "Food", "Electronics")
     Barcode CHAR(13) NOT NULL,                  -- Product barcode
     Variant INTEGER NOT NULL DEFAULT 1,     -- Variant number, defaults to 1 if not given
+    Category TEXT NOT NULL,                 -- Product category (e.g., "Food", "Electronics")
     Type TEXT NOT NULL,                     -- Product type (e.g., "Food", "Electronics")
     Brand TEXT NOT NULL,                    -- Brand name
     Title TEXT NOT NULL,                    -- Product name/title
@@ -43,8 +44,8 @@ Stores information about stores that are used to buy products.
 CREATE TABLE Stores (
     SCODE TEXT PRIMARY KEY,
     Name TEXT NULL,
-    Longitude REAL NOT NULL,
-    Latitude REAL NOT NULL
+    Latitude REAL NOT NULL,
+    Longitude REAL NOT NULL
 );
 ```
 
@@ -56,11 +57,13 @@ CREATE TABLE Transactions (
     SCODE TEXT NOT NULL,
     Barcode CHAR(13) NOT NULL,
     Variant INTEGER NOT NULL DEFAULT 1,
+    Quantity INTEGER NOT NULL DEFAULT 1,
     Price DECIMAL(10, 2) NOT NULL,
     Discounted_price DECIMAL(10, 2) DEFAULT NULL,
     Date TEXT NOT NULL,
     Time TEXT NOT NULL,
     Link TEXT DEFAULT NULL,
+    IsPurchase INTEGER NOT NULL DEFAULT 1,
     PRIMARY KEY (SCODE, Barcode, Variant, Date, Time),
     FOREIGN KEY (SCODE) REFERENCES Stores(SCODE),
     FOREIGN KEY (Barcode, Variant) REFERENCES Products(Barcode, Variant)
