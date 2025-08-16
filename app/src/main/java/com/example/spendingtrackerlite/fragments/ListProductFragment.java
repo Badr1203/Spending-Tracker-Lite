@@ -196,6 +196,24 @@ public class ListProductFragment extends Fragment implements ProductAdapter.OnPr
         }
     }
 
+    @Override
+    public void onProductLongClick(Product product) {
+        if (product == null) {
+            Toast.makeText(getContext(), "Error: Product data for editing is missing.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AddProductFragment editProductFragment = AddProductFragment.newInstanceForEdit(product.getId()); // Pass product ID
+
+        if (getActivity() != null) {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.main_content, editProductFragment) // Use your main fragment container ID
+                    .addToBackStack(null)
+                    .commit();
+            Toast.makeText(getContext(), "Editing: " + product.getTitle(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     // You might want to consider using a ViewModel to hold the allProductsList
     // to better handle configuration changes (like screen rotation)
     // and to separate data logic from the UI.
